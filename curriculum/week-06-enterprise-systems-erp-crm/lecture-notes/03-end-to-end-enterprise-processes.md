@@ -11,6 +11,15 @@ Lead/Opportunity → Sales Order → Fulfillment/Shipment → Invoice → Paymen
    (CRM)              (ERP-Sales)    (ERP-Inventory)      (ERP-Finance)  (ERP-Finance)
 ```
 
+```mermaid
+flowchart LR
+  A["Lead or Opportunity - CRM"] --> B["Sales Order - ERP Sales"]
+  B --> C["Fulfillment or Shipment - ERP Inventory"]
+  C --> D["Invoice - ERP Finance"]
+  D --> E["Payment or Cash - ERP Finance"]
+```
+*Order-to-cash crosses CRM and three ERP modules before a sale becomes cash in hand.*
+
 Each arrow is a place where data has to move correctly from one part of the system to the next, and where a lot of real-world failure happens:
 
 1. **Lead/Opportunity (CRM).** A sales rep is pursuing a deal. It has a `stage`, an estimated value, an owning rep. Nothing has shipped, nothing is owed. This is the `crm_opportunities` table you loaded this week.
@@ -65,6 +74,15 @@ The second query returns zero rows in this week's clean seed data — but in a r
 Purchase Requisition → Purchase Order → Goods Receipt → Vendor Invoice → Payment
      (internal need)      (ERP-Procurement)  (ERP-Inventory)  (ERP-Finance)   (ERP-Finance)
 ```
+
+```mermaid
+flowchart LR
+  A["Purchase Requisition"] --> B["Purchase Order - ERP Procurement"]
+  B --> C["Goods Receipt - ERP Inventory"]
+  C --> D["Vendor Invoice - ERP Finance"]
+  D --> E["Payment - ERP Finance"]
+```
+*Procure-to-pay mirrors order-to-cash from the buying side, ending in a three-way match before payment.*
 
 1. **Purchase requisition.** Someone internally (a buyer, an automated reorder-point trigger) decides more stock is needed. Crunch Cycles' schema skips this step for simplicity — in a mature ERP it's its own approval-workflow table.
 2. **Purchase order (ERP-Procurement).** A formal commitment to a specific supplier: what, how much, at what cost, by when. This is `purchase_orders` + `purchase_order_items`.

@@ -27,6 +27,16 @@ Lecture 1 told you to design bottom-up (data foundation first, AI last) because 
 
 This is the structure Exercise 2's diagram and Exercise 3's delivery plan feed directly into — you are not writing a new document for the defense, you are re-ordering the ones you already built.
 
+```mermaid
+flowchart TD
+  A["The problem in the org's own words"] --> B["The one sentence strategic purpose"]
+  B --> C["The system top down"]
+  C --> D["Cost and timeline"]
+  D --> E["Risk and mitigations"]
+  E --> F["The ask"]
+```
+*Present top down even though the system was designed bottom up.*
+
 ## 3. Diagrams that survive a real room
 
 A good architecture diagram (Exercise 2) does three things a bad one doesn't:

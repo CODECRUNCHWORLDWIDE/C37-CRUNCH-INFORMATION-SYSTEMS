@@ -44,6 +44,16 @@ The boundary is genuinely blurry in vendor marketing, but there's a clean way to
 - Before a deal closes, it lives in CRM as an `Opportunity` with a `stage` — Prospecting, Qualified, Proposal, Won, Lost. It's a forecast, a piece of *intent*.
 - The moment a deal is won, it becomes a fact: a sales order, with real product lines, a real ship date, a real invoice. That fact belongs in ERP.
 
+```mermaid
+flowchart LR
+  A["Prospecting"] --> B["Qualified"]
+  B --> C["Proposal"]
+  C --> D["Won"]
+  D --> E["ERP Sales Order"]
+  C --> F["Lost"]
+```
+*A CRM opportunity moves through stages until it is Won, at which point it becomes a real ERP sales order — or Lost, and never does.*
+
 Query the data you loaded this week and you'll see the boundary directly:
 
 ```sql

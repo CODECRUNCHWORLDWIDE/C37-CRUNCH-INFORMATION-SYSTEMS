@@ -151,6 +151,17 @@ def order_risk(order_id):
 
 Two design decisions here matter for a real system: the model loads **once**, at process startup, not on every request — reloading a model file per request would add tens of milliseconds and disk I/O to every call for no benefit, since the model doesn't change between retrains. And every score gets **written to `order_risk_scores`**, not just returned — that log is what makes the human-in-the-loop review (Lecture 3) and the evaluation (Challenge 2) possible later. An AI feature that doesn't log its own output is one you can't audit or improve.
 
+```mermaid
+flowchart LR
+  A["SQL query: features and label"] --> B["pandas DataFrame"]
+  B --> C["scikit-learn train"]
+  C --> D["Save model to disk"]
+  D --> E["Load once at startup"]
+  E --> F["Score on each request"]
+  F --> G["Write to order_risk_scores"]
+```
+*Pattern 1 end to end: offline training happens once, then the loaded model scores every request in-process.*
+
 ## Pattern 2: an LLM, called via the Anthropic API
 
 A large language model doesn't get trained on your data — it comes pre-trained, and you call it over the network for each request, the same way Week 7 taught you to call a payment processor or a shipping API. The integration shape is: import the client, construct a request, handle the response, handle failure.
@@ -287,6 +298,23 @@ def execute_tool(engine, name: str, tool_input: dict):
 ```
 
 Notice the shape of these tools: `lookup_order` takes an ID, and `find_customers_by_region_and_min_spend` takes a region, a threshold, and a date — every parameter is bound with `:name` placeholders, executed by SQLAlchemy, never string-interpolated into the SQL. **The model never sees or writes raw SQL.** It picks a tool by name and supplies structured JSON arguments; your code is the only thing that ever constructs a query. This is the guardrail that makes the feature safe against both a mistaken model output and a malicious prompt hidden in user input — there is no SQL injection surface because there is no path from model output to raw SQL text, ever. Exercise 3 builds out the full request/response loop that drives this tool-calling exchange to completion.
+
+```mermaid
+sequenceDiagram
+  participant Staff
+  participant API
+  participant Claude
+  participant DB
+  Staff->>API: Ask a question
+  API->>Claude: Send question and tool list
+  Claude->>API: Request lookup_order tool
+  API->>DB: Run parameterized query
+  DB->>API: Return rows
+  API->>Claude: Send tool result
+  Claude->>API: Return grounded answer
+  API->>Staff: Show answer
+```
+*Tool-use grounding: Claude picks the tool and arguments, but only your code ever touches the database.*
 
 ## Latency, cost, and what happens when the API is unavailable
 

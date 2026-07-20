@@ -133,6 +133,15 @@ The classic textbook example: a table `(student, course, instructor)` where each
 
 **In practice:** BCNF violations are rare in typical business schemas — they only show up with overlapping composite candidate keys, which is unusual outside academic scheduling and a few other niche domains. Know it exists, know the general shape (multiple overlapping keys, a non-key-column-that's-really-a-partial-key determining part of another key), and don't lose sleep over hand-checking every table against it. 3NF is where 95% of real schema design work happens.
 
+```mermaid
+flowchart TD
+  A["Unnormalized flat table"] --> B["1NF - atomic values, a key exists"]
+  B --> C["2NF - remove partial dependencies"]
+  C --> D["3NF - remove transitive dependencies"]
+  D --> E["BCNF - resolve overlapping candidate keys"]
+```
+*Each normal form removes one more category of redundancy from the last.*
+
 ## 8. When to stop normalizing on purpose
 
 Normalization removes redundancy, and redundancy is what causes anomalies — but normalization is not free. Every extra table is an extra `JOIN` a query needs, and every `JOIN` costs performance and reading effort. Two situations where **staying at 3NF (or even deliberately backing off it) is the right call**, not a mistake:

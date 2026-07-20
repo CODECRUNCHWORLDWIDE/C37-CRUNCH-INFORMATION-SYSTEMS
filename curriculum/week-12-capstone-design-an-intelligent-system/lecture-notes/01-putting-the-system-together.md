@@ -113,6 +113,19 @@ Not every layer should be custom-built. Real organizations mix build and buy, an
 
 The rule of thumb that survives contact with a real budget: **build what encodes your organization's unique logic; buy what's a solved, generic problem.** State this decision, layer by layer, in your capstone — Lecture 2 turns this into a cost comparison.
 
+```mermaid
+flowchart TD
+  Q{"Is this layer's logic unique to your org"}
+  Q -- Yes --> BUILD["Build it yourself"]
+  Q -- No --> BUY["Buy or use a managed service"]
+  BUILD --> L1["Layer 1 data foundation"]
+  BUILD --> L4["Layer 4 policy and RLS rules"]
+  BUILD --> L5["Layer 5 warehouse schema"]
+  BUY --> L3["Layer 3 cloud platform"]
+  BUY --> L6["Layer 6 hosted AI model"]
+```
+*Deciding build versus buy, layer by layer, using the uniqueness test.*
+
 ## 6. What "coherent" actually means
 
 A system is coherent when a stranger — an auditor, a new hire, a hostile reviewer in Challenge 1 — can trace one customer record from data entry through to a decision made about that customer, without hitting an unexplained gap, an inconsistent security rule, or a "and then someone exports a CSV" step. That traceability is the real deliverable of this lecture. Exercise 2 asks you to draw exactly that trace for your own organization: one arrow-by-arrow diagram, from the person entering data to the AI feature (or dashboard) that uses it, with every layer and every seam labeled.

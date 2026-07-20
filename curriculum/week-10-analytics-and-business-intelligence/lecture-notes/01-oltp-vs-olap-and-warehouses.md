@@ -115,6 +115,13 @@ Real warehouses — however big the company — tend to converge on the same thr
 - **Raw / staging** — a landing zone that holds an as-close-to-untouched copy of the source data, with a `loaded_at` timestamp. Nothing is cleaned or reshaped here — its entire job is to be a faithful, disposable copy you can always re-derive the warehouse from. This is the **E** and the first **L** of ELT.
 - **Warehouse (marts)** — the dimensional model: facts and dimensions, built with SQL *from* the raw layer, denormalized and shaped around business questions. This is the **T** — transform happens *inside the destination*, using the destination's own SQL engine, which is what makes this pattern **ELT** rather than Week 7's **ETL**.
 
+```mermaid
+flowchart LR
+  A["Source: crunchcycles OLTP"] --> B["Raw staging: untouched timestamped copy"]
+  B --> C["Warehouse marts: star schema shaped for questions"]
+```
+*Data moves through three layers on its way from a live checkout to a trustworthy report.*
+
 ## 9. ETL vs. ELT, revisited for a warehouse
 
 Week 7 (Lecture 3) covered ETL: extract, transform in Python/pandas, load an already-clean table. That's still the right pattern for a small, single-purpose feed like the `fx_rates` table.

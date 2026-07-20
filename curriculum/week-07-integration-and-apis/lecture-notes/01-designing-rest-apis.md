@@ -53,6 +53,16 @@ The URL names a **thing**; the HTTP verb names the **action**. Once you internal
 
 Notice `orders` nested under `customers` — `GET /customers/42/orders` reads naturally as "this customer's orders." But `orders` also exists at the top level, because "give me all orders shipped yesterday across every customer" is a real, common question that has nothing to do with one customer. **Nesting is for context, not ownership** — don't force everything into a hierarchy just because the database has foreign keys.
 
+```mermaid
+flowchart TD
+  A["Customers collection"] --> B["One customer"]
+  B --> C["That customers orders"]
+  D["Orders collection top level"] --> E["One order"]
+  E --> F["Items on that order"]
+  G["Products collection"] --> H["One product"]
+```
+*Orders are reachable both nested under a customer and as their own top-level collection — nesting is for context, not the only path to the data.*
+
 ## The HTTP verbs and what they promise
 
 | Verb | Meaning | Idempotent? | Safe (no side effects)? | Crunch Cycles example |
@@ -87,6 +97,18 @@ A REST API's status code is not decoration — it's the first thing a well-behav
 | `503` | Service Unavailable | You're up but temporarily can't serve requests (maintenance, overload). |
 
 A frequent judgment call: `401` vs. `403` vs. `404`. If a customer requests `GET /orders/999` and order 999 belongs to a *different* customer, do you return `403` (it exists, you can't see it) or `404` (pretend it doesn't exist)? Most production APIs choose `404` here deliberately — it leaks no information about what IDs exist, which matters for security. State this choice explicitly in your API docs; don't leave it to be discovered by trial and error.
+
+```mermaid
+flowchart TD
+  A["Request arrives"] --> B{"Valid credentials given"}
+  B -- No --> C["Return 401 Unauthorized"]
+  B -- Yes --> D{"Allowed to see this resource"}
+  D -- No --> E["Return 404 to hide existence"]
+  D -- Yes --> F{"Resource exists"}
+  F -- No --> G["Return 404 Not Found"]
+  F -- Yes --> H["Return 200 OK"]
+```
+*Most production APIs collapse both "not allowed" and "does not exist" into 404 so the response leaks nothing about what IDs are real.*
 
 ## Request and response shape
 

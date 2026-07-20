@@ -222,6 +222,19 @@ if __name__ == "__main__":
 
 The `try`/`except` **inside the loop, around one ticket** — not around the whole `run()` function — is the fault-isolation property. If ticket 47 has some data problem that raises an exception, tickets 48–51 still get processed; ticket 47's failure gets logged with a full stack trace (`exc_info=True`) and the run keeps going. A single `try` wrapped around the entire function would mean one bad row loses you the whole batch — exactly the failure mode a "reliable" automation is supposed to prevent.
 
+```mermaid
+flowchart TD
+    A["Fetch unassigned minor tickets"] --> B["For each ticket"]
+    B --> C["Process one ticket in its own transaction"]
+    C -->|Success| D["Commit - log ok or skipped"]
+    C -->|Exception| E["Rollback - log error"]
+    D --> F["Next ticket"]
+    E --> F
+    F --> B
+    B -->|All done| G["Log run summary"]
+```
+*One transaction per ticket means a single bad row is rolled back and logged without stopping the rest of the batch.*
+
 `@retry` is scoped narrowly: it only retries `psycopg2.OperationalError` (connection drops, the kind of thing that's often transient and safe to retry), not every possible exception. Retrying a bug in your own business logic three times with exponential backoff just delays the failure and spams the log — only retry things that are plausibly *transient*.
 
 ## 5. Scheduling it

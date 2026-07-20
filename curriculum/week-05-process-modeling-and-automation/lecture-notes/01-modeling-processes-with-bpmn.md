@@ -152,13 +152,13 @@ flowchart TD
     F --> H
     G --> H
     H --> I
-    I -- yes --> J --> N1((Back in service)):::end
+    I -- yes --> J --> N1((Back in service)):::done
     I -- no --> K --> L
-    L -- repair --> M --> N2((Back in service)):::end
-    L -- retire --> N3((Retired)):::end
+    L -- repair --> M --> N2((Back in service)):::done
+    L -- retire --> N3((Retired)):::done
 
     classDef start fill:#2b6,stroke:#1a4;
-    classDef end fill:#c33,stroke:#911;
+    classDef done fill:#c33,stroke:#911;
 ```
 
 Read it lane by lane, then read it top-to-bottom by following one path at a time (trace the minor path start to finish, then the major/repair path, then the major/retire path). That's the whole discipline: **one branch at a time**, never try to hold the whole diagram in your head while drawing it.

@@ -87,6 +87,16 @@ WHERE customer_id = 42;
 
 Document this decision explicitly wherever your privacy policy or governance doc addresses erasure: "we pseudonymize rather than hard-delete records subject to a legal retention obligation, and hard-delete everything else." That single sentence, decided in advance, is the difference between a calm, defensible response to an erasure request and a scramble the day one actually arrives.
 
+```mermaid
+flowchart TD
+  A["Erasure request received"] --> B["Does a legal retention obligation apply"]
+  B -->|Yes - tax or financial record| C["Pseudonymize identifying fields"]
+  B -->|No obligation applies| D["Hard delete the record"]
+  C --> E["Transaction facts survive without identity"]
+  D --> F["Personal data removed entirely"]
+```
+*Erasure requests split on one question: is there a competing legal duty to retain the record.*
+
 ## Breach notification — the clock that starts the moment you find out
 
 If personal data is exposed — a stolen laptop with an unencrypted database export, a misconfigured cloud storage bucket, a SQL injection that dumped `customers` — GDPR requires notifying the relevant regulator within **72 hours** of becoming aware of the breach, and notifying affected individuals "without undue delay" if the breach poses a high risk to them. Two engineering consequences follow directly from that deadline:

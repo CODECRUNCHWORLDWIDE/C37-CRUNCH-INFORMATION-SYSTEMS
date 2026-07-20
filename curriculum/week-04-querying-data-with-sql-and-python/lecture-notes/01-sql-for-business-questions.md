@@ -213,6 +213,15 @@ LIMIT 5;
 
 A CTE is not free performance-wise (Postgres may or may not "inline" it depending on version and query), but it is **always** free *readability*-wise. When a query needs more than one logical step, name each step with `WITH` before you reach for a nested subquery — future-you (and your teammates) will read it top to bottom instead of inside-out.
 
+```mermaid
+flowchart LR
+  A["orders and order_items"] --> B["completed_orders CTE"]
+  B --> C["order_revenue CTE"]
+  C --> D["Final SELECT joins customers"]
+  D --> E["Top 5 customers by revenue"]
+```
+*Each CTE names one step, so the final query reads top to bottom instead of inside-out.*
+
 ## 10. Picking the right join: a decision list
 
 Ask these in order:
@@ -222,6 +231,19 @@ Ask these in order:
 3. **Does the question require "everything from both sides, gaps visible on either"?** → `FULL OUTER JOIN`.
 4. **Does the question require every combination of two independent sets (a calendar grid, a full matrix)?** → `CROSS JOIN`.
 5. **Does the table relate to itself (a manager, a parent category, a previous record)?** → self-join, almost always with `LEFT JOIN` if the "root" row can have `NULL` in the self-referencing column.
+
+```mermaid
+flowchart TD
+  Q{"Only rows where both sides match?"} -->|Yes| INNER["INNER JOIN"]
+  Q -->|No| A2{"Need all of A even without a match?"}
+  A2 -->|Yes| LEFT["LEFT JOIN"]
+  A2 -->|No| A3{"Need everything from both sides?"}
+  A3 -->|Yes| FULL["FULL OUTER JOIN"]
+  A3 -->|No| A4{"Need every combination of two sets?"}
+  A4 -->|Yes| CROSS["CROSS JOIN"]
+  A4 -->|No| SELF["Self join"]
+```
+*Walking the five questions in order picks the right join without guessing.*
 
 ## 11. Check yourself
 

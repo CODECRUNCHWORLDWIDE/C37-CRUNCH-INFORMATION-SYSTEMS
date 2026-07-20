@@ -50,6 +50,15 @@ Feedback is the piece people forget, and it's the one that separates a system fr
 - *Output:* a roast batch plan handed to the Head Roaster.
 - *Feedback:* the actual beans consumed per batch (from the Roast Batch Log) get deducted back into Green Coffee Inventory — so tomorrow's scheduling input reflects today's real consumption, not yesterday's guess.
 
+```mermaid
+flowchart LR
+  A["Confirmed orders and green bean stock"] --> B["Roast Scheduling process"]
+  B --> C["Daily roast batch plan"]
+  C --> D["Beans consumed feed back into inventory"]
+  D --> A
+```
+*Riverbend's roast-scheduling loop — today's consumption becomes tomorrow's input.*
+
 Run the sanity-check query from the README and look at flows `4`–`6` and `9` in `is_flows` — that's this exact loop, already sitting in your database:
 
 ```sql

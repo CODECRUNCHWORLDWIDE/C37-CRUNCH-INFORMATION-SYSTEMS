@@ -16,6 +16,15 @@ Both acronyms describe the same three steps in different order:
 
 For Crunch Cycles' scale, **ETL** is the right default: transform in Python/pandas where you have full programming-language power, then load a small, clean, purpose-built table. Know that ELT exists and why bigger organizations reach for it — you may meet it at a job even if you don't build it here.
 
+```mermaid
+flowchart LR
+  A["Frankfurter API"] --> B["Extract raw JSON"]
+  B --> C["Transform in pandas"]
+  C --> D["Load upsert into Postgres"]
+  D --> E["fx_rates table"]
+```
+*ETL transforms the data before it lands — the fx_rates table is already clean by the time it is loaded.*
+
 ## Batch vs. streaming
 
 **Batch** integration runs on a schedule — every hour, every night at 2 a.m., every Monday morning — and processes everything that changed since last time in one pass. It's simple, easy to debug (you can just re-run it), and the right default for anything that doesn't need to be instant: nightly exchange-rate refreshes, weekly supplier catalog syncs, end-of-day reconciliation reports.
@@ -40,6 +49,24 @@ Imagine Crunch Cycles eventually integrates with five systems: a payment process
 | Who owns the contract | Every pair, separately | The hub, once |
 
 Neither is "correct" in isolation — point-to-point is the right call for a two-system integration you need working this week; hub-and-spoke is the right call once you're the fourth or fifth integration deep and copy-pasted retry logic is showing up in every script.
+
+```mermaid
+flowchart TD
+  subgraph PointToPoint["Point to point"]
+    P1["Payments"] --- P2["Shipping"]
+    P1 --- P3["Accounting"]
+    P2 --- P3
+    P2 --- P4["Marketing"]
+    P3 --- P4
+  end
+  subgraph HubSpoke["Hub and spoke"]
+    H1["Payments"] --> Hub["Crunch Cycles Hub"]
+    H2["Shipping"] --> Hub
+    H3["Accounting"] --> Hub
+    H4["Marketing"] --> Hub
+  end
+```
+*Point to point connections grow roughly with the square of the system count; hub and spoke keeps it linear at the cost of the hub becoming a single point of failure.*
 
 ## Building the ETL job: FX rates into Postgres
 

@@ -82,6 +82,20 @@ Five exchanges took "make it faster" to two testable candidate requirements:
 
 Neither of those is a finished requirement yet — "current," "check," and "without calling" all still need precision (how current? within what time? through what channel?). That precision work is Lecture 2. What laddering gets you is the *right target* to make precise — the actual need, not the first sentence someone said in a hallway.
 
+```mermaid
+sequenceDiagram
+    participant Analyst
+    participant Dana
+    Analyst->>Dana: Walk me through the last slow order
+    Dana->>Analyst: Jordan waited 25 minutes on hold with the DC
+    Analyst->>Dana: Why does confirming stock need a phone call
+    Dana->>Analyst: We cannot see DC inventory from our store system
+    Analyst->>Dana: If associates saw DC stock would the call go away
+    Dana->>Analyst: Yes if she knows it is genuinely available
+    Note over Analyst,Dana: Make it faster becomes two testable requirements
+```
+*Five whys ladders a vague complaint down to two testable candidate requirements.*
+
 ### Rules for the interview itself
 
 - **Ask open questions first, closed questions last.** "Tell me about the last time this went wrong" surfaces things you didn't know to ask about. "Do you need a mobile app?" presupposes a solution and will get you a yes/no about *your* idea, not their need.

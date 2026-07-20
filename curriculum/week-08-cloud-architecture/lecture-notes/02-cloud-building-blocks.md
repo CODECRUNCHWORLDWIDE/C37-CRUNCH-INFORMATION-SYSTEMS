@@ -150,6 +150,17 @@ Putting all four primitives together for the system you'll actually deploy this 
 
 Every box in that diagram is one of the four primitives from this lecture: compute (the app instances), managed database (Postgres primary + standby), object storage (backups/invoices), and networking (DNS, load balancer, private network). This is the diagram you'll redraw and extend for your own mini-project deployment.
 
+```mermaid
+flowchart TD
+    DNS["DNS api.crunchcycles.com"] --> LB["Load balancer health checked"]
+    LB --> App1["App instance 1 container"]
+    LB --> App2["App instance 2 container"]
+    App1 --> DB["Managed PostgreSQL primary and standby"]
+    App2 --> DB
+    DB --> Obj["Object storage invoices and backups"]
+```
+*Request flow from DNS through the load balancer to app instances, the managed database, and object storage.*
+
 ## 6. Check yourself
 
 - Name the three compute shapes and, for each, one workload it fits well and one it fits poorly.

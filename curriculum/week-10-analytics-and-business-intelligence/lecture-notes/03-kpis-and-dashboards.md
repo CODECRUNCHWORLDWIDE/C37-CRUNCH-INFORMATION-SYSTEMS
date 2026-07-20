@@ -208,6 +208,16 @@ Whether you built the dashboard or you're the one reading someone else's, run ev
 4. **What time window, and was it chosen before or after seeing the result?** A window picked *after* seeing which range looks best is not analysis — it's storytelling with a SQL `WHERE` clause.
 5. **Could I re-derive this number myself from the query, right now?** If the answer is "I'd have to ask whoever built the dashboard," the dashboard has a trust problem, no matter how good it looks.
 
+```mermaid
+flowchart TD
+  A["What is the exact filter"] --> B["What is the denominator"]
+  B --> C["Is this a rate or a cumulative total"]
+  C --> D["What time window and when was it chosen"]
+  D --> E["Could I re-derive this myself right now"]
+  E --> F["Trust the number"]
+```
+*Five questions to run every KPI through before trusting it.*
+
 ## What's next
 
 Exercise 3 has you derive KPIs from a stated business goal, the way §2 modeled. Challenge 2 hands you a real misleading dashboard built on §4's exact trap, for you to diagnose and fix. The mini-project combines the full week: the warehouse (Lecture 2), an idempotent ELT job (Exercise 2), and a dashboard of 4–6 KPIs built the way §5 describes.

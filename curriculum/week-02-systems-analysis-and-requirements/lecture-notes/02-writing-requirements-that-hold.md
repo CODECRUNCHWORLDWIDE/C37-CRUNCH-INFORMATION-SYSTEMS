@@ -16,6 +16,16 @@ A **non-functional requirement (NFR)** describes a *quality* the system must hav
 
 **The test that separates them:** if you can point at a single feature or action and say "the system did X," it's functional. If you're describing a constraint that applies *across* many features — speed, uptime, who's allowed to see it, how many people can use it at once — it's non-functional.
 
+```mermaid
+flowchart TD
+    A["Read the requirement"] --> B{"Points at one feature or action"}
+    B -->|Yes| C["Functional requirement"]
+    B -->|No| D{"Describes a constraint across many features"}
+    D -->|Yes| E["Non-functional requirement"]
+    D -->|No| F["Not specific enough yet - keep laddering"]
+```
+*The one-question test that sorts a requirement into functional or non-functional.*
+
 ### The common NFR categories
 
 | Category | What it constrains | Meridian example |

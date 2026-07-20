@@ -87,6 +87,18 @@ New teams tend to pick a model by reflex — "everyone uses AWS EC2" or "just th
 3. **Is this capability core to what makes the business valuable, or a solved commodity problem?** If competitors don't win or lose on "how well we run our own email server," rent it (SaaS). If the thing *is* the product — Crunch Cycles' order-management logic — build and own it.
 4. **What's the compliance and control requirement?** Some regulated workloads (certain government, health, or financial-data workloads) require control down to specific layers that only IaaS — or on-prem — provides. Most startups building a first product don't have this constraint yet; don't borrow tomorrow's requirements today.
 
+```mermaid
+flowchart TD
+    Start["New workload to place"] --> Q1{"Can the team own ops work"}
+    Q1 -->|"Yes dedicated ops team"| IaaS["IaaS rent raw infrastructure"]
+    Q1 -->|"No want to ship features"| Q2{"Needs something PaaS does not offer"}
+    Q2 -->|"Yes GPU or custom OS or legacy"| IaaS
+    Q2 -->|"No standard web app"| Q3{"Is this core to the business"}
+    Q3 -->|"No solved commodity problem"| SaaS["SaaS rent a finished application"]
+    Q3 -->|"Yes the product itself"| PaaS["PaaS rent a platform own the app"]
+```
+*Working through the four decision questions to land on IaaS, PaaS, or SaaS.*
+
 ## 5. Placing Crunch Cycles on the spectrum
 
 Walk through the actual system built in Weeks 3–7 and place each piece:

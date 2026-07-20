@@ -124,6 +124,18 @@ When you're unsure which bucket something belongs in, ask in this order:
 
 If two answers seem to fit, you're probably looking at two components tangled together (e.g., "the spreadsheet the sales team uses to track orders" = technology **and** an implied, informal process for how it gets updated). Split it. Modeling each component separately — even when they're always mentioned together in conversation — is what makes the register useful instead of just a copy of how people already talk about the system.
 
+```mermaid
+flowchart TD
+  A["Is it a human being or a role a human plays"] -->|Yes| P["People"]
+  A -->|No| B["Is it a repeatable sequence of steps"]
+  B -->|Yes| PR["Process"]
+  B -->|No| C["Is it a fact being stored or moved"]
+  C -->|Yes| DT["Data"]
+  C -->|No| E["Is it a physical machine or piece of software"]
+  E -->|Yes| T["Technology"]
+```
+*The four-question checklist for classifying any real-world item into exactly one component.*
+
 ## 7. Check yourself
 
 - Explain, with a Riverbend example, why "Wholesale Order Portal" is technology but "Order Intake" is a process.

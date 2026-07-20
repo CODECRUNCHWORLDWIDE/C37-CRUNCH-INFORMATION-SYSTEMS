@@ -55,6 +55,18 @@ The fix is almost never "make the model better" — models are never perfect —
 
 A classical model scored offline in a nightly batch job can take minutes; a risk score shown live on a rep's dashboard needs to return in well under a second. An LLM call typically costs somewhere between a fraction of a cent and a few cents and takes anywhere from under a second to several seconds depending on the model and how much it has to generate — fine for an on-demand staff Q&A tool, unacceptable if you tried to put it in the hot path of checkout at 500 requests per second. Know your latency and cost budget *before* you pick where in the request path the AI call goes, not after a load test surprises you.
 
+```mermaid
+flowchart TD
+  A["Value: does the manual process hurt"] -->|No| S["Stop - not ready to build"]
+  A -->|Yes| B["Data: do you have labels or facts"]
+  B -->|No| S
+  B -->|Yes| C["Error tolerance: what happens when wrong"]
+  C -->|Bad| S
+  C -->|Good| D["Latency and cost: fits the budget"]
+  D --> E["Scope and build the feature"]
+```
+*The four-question framework: a clear no on value, data, or error tolerance stops the feature before it's built.*
+
 ## Applying the framework to five Crunch Cycles proposals
 
 Here's how the framework plays out against feature requests you might plausibly get for Crunch Cycles. Work through these before Exercise 1, where you'll do this scoring yourself.

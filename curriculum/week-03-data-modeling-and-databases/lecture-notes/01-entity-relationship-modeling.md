@@ -152,6 +152,19 @@ Putting it together (rendered as text — Lecture 3 will translate this straight
 
 ASCII only gets you so far — for real work, sketch this on paper or in a tool like [dbdiagram.io](https://dbdiagram.io) (see [resources.md](../resources.md)). What matters is that **every box is an entity with a primary key, every line is a relationship with cardinality marked at both ends, and every foreign key is visible as a line, not buried in a paragraph.**
 
+```mermaid
+erDiagram
+  STATION ||--o{ BIKE : docks
+  STATION ||--o{ RIDE : starts
+  STATION ||--o{ RIDE : ends
+  RIDER ||--o{ RIDE : takes
+  BIKE ||--o{ RIDE : used_in
+  BIKE ||--o{ MAINTENANCE_RECORD : serviced
+  MECHANIC ||--o{ MAINTENANCE_RECORD : performs
+  MEMBERSHIP_PLAN ||--o{ RIDER : covers
+```
+*The full CrunchRide entity-relationship model — seven entities and their cardinalities.*
+
 ## 6. A modeling process you can reuse on any domain
 
 1. Read the domain description once for understanding, once more with a pen, circling nouns.

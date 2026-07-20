@@ -243,6 +243,19 @@ def set_rls_context(conn, role: str, region_id: int | None):
 
 Now, even if a future engineer writes `SELECT * FROM orders` with no `WHERE` clause at all, a sales rep's database connection physically cannot see another region's rows — the policy is evaluated by Postgres itself on every query, regardless of what SQL the application sent. This is defense in depth: RBAC stops the wrong role from calling an endpoint; RLS stops the wrong rows from coming back even if RBAC or application logic has a bug.
 
+```mermaid
+flowchart TD
+  A["Client sends username and password"] --> B["AuthN - check bcrypt hash"]
+  B --> C["API issues JWT with identity and role"]
+  C --> D["Client sends Bearer token on request"]
+  D --> E["RBAC require auth checks role"]
+  E -->|role denied| F["403 Forbidden"]
+  E -->|role allowed| G["SET ROLE and app.current_region in Postgres"]
+  G --> H["RLS policy filters rows by region"]
+  H --> I["Only permitted rows returned"]
+```
+*Two independent layers of defense: RBAC gates the endpoint, RLS gates the rows.*
+
 ## Secret management — the thing that leaks the whole system if you get it wrong
 
 Every credential this lecture introduced — `JWT_SECRET_KEY`, `DATABASE_URL` with its password, the API keys from Week 7 — is a **secret**: a value that, if exposed, lets someone impersonate your system or read your data directly. Three rules, non-negotiable:

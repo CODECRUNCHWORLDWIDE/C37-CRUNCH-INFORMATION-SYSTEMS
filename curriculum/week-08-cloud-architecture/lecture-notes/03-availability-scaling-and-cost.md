@@ -55,6 +55,17 @@ AFTER (redundant across zones):
 
 Two changes did the work: **at least two app instances in at least two zones** behind a health-checked load balancer (if one instance or zone dies, the other keeps serving — the load balancer stops routing to the dead one within seconds), and **a database standby in a second zone** that the platform can promote automatically. Neither change requires new *kinds* of building blocks — it's the same compute and managed-database primitives from Lecture 2, just provisioned with more than one of each, deliberately spread across zones.
 
+```mermaid
+flowchart TD
+    LB["Load balancer health checked"] --> App1["App instance 1 Zone A"]
+    LB --> App2["App instance 2 Zone B"]
+    App1 --> Primary["Postgres PRIMARY Zone A"]
+    App2 --> Primary
+    Primary -. "replicates continuously" .-> Standby["Postgres STANDBY Zone B"]
+    Standby -. "promotes automatically on failure" .-> Primary
+```
+*Redundant app instances and a database standby spread across two zones remove every single point of failure.*
+
 **A subtlety that trips people up:** redundant app instances only help if the app is **stateless** — if any instance can handle any request without needing data that only exists in that instance's memory or local disk. If Crunch Cycles' app stored a shopping cart in a local file or an in-process variable, killing that instance would lose the cart even though "the system" stayed up. The fix is what you've already been doing all course: put state in the database (or, for ephemeral session data, a shared cache like Redis), never on the instance itself. **Statelessness is what makes horizontal scaling and failover possible at all** — it's a design discipline, not a checkbox you tick at deploy time.
 
 ## 3. Horizontal vs. vertical scaling

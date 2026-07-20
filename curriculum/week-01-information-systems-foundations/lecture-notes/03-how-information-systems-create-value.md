@@ -21,6 +21,14 @@ Two things matter about this ladder more than memorizing the four labels:
 
 **Second — most of the value in an information system is created at the top of the ladder, not the bottom.** A single POS Transaction row, by itself, is nearly worthless — nobody changes a single decision because of it. The *decision* to shift July's roast allocation is where the actual money is. Keep this in mind every time you're tempted to treat "we're collecting the data" as the finish line. It's the starting line.
 
+```mermaid
+flowchart BT
+  D["Data - raw uninterpreted facts"] --> I["Information - data given context"]
+  I --> K["Knowledge - information plus experience"]
+  K --> W["Wisdom - knowledge applied to a decision"]
+```
+*Each step up the DIKW pyramid requires a process — nothing climbs on its own.*
+
 ## 2. Value chain: primary vs. support activities
 
 Michael Porter's **value chain** model splits an organization's activities into two kinds:

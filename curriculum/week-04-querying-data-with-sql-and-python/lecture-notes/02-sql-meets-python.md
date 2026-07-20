@@ -21,6 +21,16 @@ engine = create_engine(DB_URL)
 
 A `.env` file (never committed — add it to `.gitignore`) holds `DATABASE_URL=postgresql+psycopg2://localhost/crunchcycles`. Every script in this course reads its connection string from the environment, not from a literal string in the code — that's what lets the *same* script run against your laptop, a teammate's laptop, and a production database with zero code changes.
 
+```mermaid
+flowchart LR
+  A["Postgres database"] --> B["SQLAlchemy engine"]
+  B --> C["pandas read_sql"]
+  C --> D["DataFrame"]
+  D --> E["pandas to_sql"]
+  E --> B
+```
+*The SQLAlchemy engine is the reusable bridge pandas crosses in both directions.*
+
 ## 2. `read_sql` — a query becomes a DataFrame
 
 ```python
@@ -154,6 +164,14 @@ tidy = revenue_grid.reset_index().melt(
 ```
 
 `melt` is the inverse of `pivot_table`. You'll reach for `pivot_table` when *producing* a report for a human, and `melt` when *consuming* a wide file (a lot of exported spreadsheets and legacy reports are wide) and needing it tidy again before you can `groupby` or `merge` it with anything else.
+
+```mermaid
+flowchart LR
+  A["Long data one row per fact"] -->|pivot_table| B["Wide report grid"]
+  B -->|melt| C["Long data again"]
+  C -->|groupby or merge| D["Further analysis"]
+```
+*pivot_table and melt are inverses — pick the shape the next step needs.*
 
 ## 9. `to_sql` — writing a DataFrame back to the database
 

@@ -41,6 +41,25 @@ In Crunch Cycles' schema:
 
 **The test that actually works:** ask "if I deleted every transaction tomorrow, would this row still make sense to keep?" A customer, a product, a supplier — yes, obviously, the business relationship or catalog entry still exists. An order — no, an order *is* a transaction; deleting all transactions deletes it by definition.
 
+```mermaid
+flowchart LR
+  subgraph M["Master data"]
+    C["Customers"]
+    P["Products"]
+    S["Suppliers"]
+  end
+  subgraph T["Transactional data"]
+    O["Orders"]
+    PU["Purchase orders"]
+    CO["CRM opportunities"]
+  end
+  C --> O
+  C --> CO
+  P --> O
+  S --> PU
+```
+*Slow-changing master data gets referenced over and over by fast-moving transactional events.*
+
 ## 2. Why master data is expensive to get wrong
 
 Transactional data is (relatively) self-correcting: if you enter an order wrong, you see the mistake fast, because the order is wrong *right now* and someone downstream notices. Master data fails silently and compounds:

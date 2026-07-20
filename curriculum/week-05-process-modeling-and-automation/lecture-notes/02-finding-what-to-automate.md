@@ -23,6 +23,15 @@ For every **user task** or **manual task** in the diagram (service tasks are alr
 
 A task scores well as an automation candidate when it's **high on rule-based-ness and stability**, and the ROI is worth it when it's also **high on frequency or error cost**. A task that's high-frequency but genuinely requires judgment (not just "hasn't been written down as a rule yet") is not a good candidate — not this quarter, maybe not ever.
 
+```mermaid
+flowchart TD
+    A["Rule-based and stable?"] -->|No| B["Do not automate yet"]
+    A -->|Yes| C["High frequency or high error cost?"]
+    C -->|Yes| D["Automate now - strong ROI"]
+    C -->|No| E["Automate later - low priority"]
+```
+*Rule-based-ness and stability gate whether a task is a candidate at all; frequency and error cost then decide how urgently to build it.*
+
 ### Scoring the CrunchRide tasks
 
 | Task | Rule-based? | Frequency | Error cost | Stability | Verdict |

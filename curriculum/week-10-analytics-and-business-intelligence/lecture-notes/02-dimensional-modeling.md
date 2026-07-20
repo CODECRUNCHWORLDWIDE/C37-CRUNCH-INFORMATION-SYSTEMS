@@ -79,6 +79,17 @@ Dimension attributes change over time: a customer moves cities, a product's pric
 
 This week's warehouse implements **Type 1** for every dimension — the right choice for a first warehouse, where getting the star schema and the ELT job right is the priority. `dim_customer` and `dim_employee` include an `is_current` column and the DDL comments below flag exactly where Type 2 versioning would slot in, and Challenge 1 asks you to reason about when Type 1 would silently give a wrong answer.
 
+```mermaid
+flowchart TD
+  A["Customer 5 region changes to DACH"] --> B{"SCD type"}
+  B -->|"Type 1 overwrite"| C["Existing row updated in place"]
+  C --> D["Old orders now show DACH history rewritten"]
+  B -->|"Type 2 new row"| E["Old row marked is_current false"]
+  B -->|"Type 2 new row"| F["New row inserted region DACH is_current true"]
+  F --> G["Old orders still point to old key region Europe preserved"]
+```
+*Type 1 rewrites history silently; Type 2 keeps the old row so past facts still tell the truth.*
+
 ## 6. Building the star schema
 
 Everything below runs against `crunchcycles_dw` (created in this week's README setup), inside the `warehouse` schema.
@@ -210,6 +221,15 @@ CREATE TABLE warehouse.fact_order_items (
 ```
 
 `order_id` and `order_status` sit directly on the fact row as plain values instead of pointing at a `dim_order` table — that's called a **degenerate dimension**: an identifier from the source system that has business meaning (an analyst needs to see "order #482" on a report) but no attributes of its own worth a separate dimension table for. Storing it directly is simpler and exactly as correct as inventing a one-column dimension table would be.
+
+```mermaid
+erDiagram
+    FACT_ORDER_ITEMS }o--|| DIM_DATE : date_key
+    FACT_ORDER_ITEMS }o--|| DIM_CUSTOMER : customer_key
+    FACT_ORDER_ITEMS }o--|| DIM_PRODUCT : product_key
+    FACT_ORDER_ITEMS }o--|| DIM_EMPLOYEE : employee_key
+```
+*The finished star schema: one fact table, four dimensions, each one join away.*
 
 ## 7. Why this shape answers Lecture 1's question fast
 

@@ -44,6 +44,17 @@ def review_risk_score(order_id):
 
 The model never touches `review_decision` — only a human, acting through an authenticated, RBAC-checked endpoint, can write to it. That's the review-and-approve pattern made concrete: the model proposes, the schema records that a specific person disposed of the proposal, and nothing downstream treats the model's output as final on its own.
 
+```mermaid
+stateDiagram-v2
+  [*] --> Scored
+  Scored --> Reviewed: Human submits a decision
+  Reviewed --> Proceed
+  Reviewed --> ContactCustomer
+  Reviewed --> Expedite
+  Reviewed --> Hold
+```
+*Review-and-approve as a schema state: a score is never final until a specific human records a decision on it.*
+
 ## Evaluating an AI feature
 
 "It looked right when I tried it a few times" is not an evaluation. It's an anecdote. A real evaluation is a repeatable measurement against a fixed test set, and it looks different for a classifier than for an LLM feature — because they fail in different ways.

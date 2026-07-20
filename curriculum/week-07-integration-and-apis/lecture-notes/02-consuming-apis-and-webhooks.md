@@ -142,6 +142,18 @@ This is **exponential backoff**: 1s, 2s, 4s, 8s, 16s between attempts, so a temp
 
 The same backoff pattern applies to `500`/`502`/`503`/`504` responses and connection errors — those are usually *transient*, worth retrying. A `400` or `404`, by contrast, will **never** succeed on retry — the request itself is wrong, and retrying just wastes calls. **Only retry the errors that retrying can fix.**
 
+```mermaid
+flowchart TD
+  A["Request sent"] --> B{"Status code"}
+  B -- "429 or 5xx" --> C["Wait with backoff"]
+  C --> D{"Retries left"}
+  D -- Yes --> A
+  D -- No --> E["Give up, raise error"]
+  B -- "400 or 404" --> F["Fail immediately, no retry"]
+  B -- "2xx" --> G["Return response"]
+```
+*Only the transient failures loop back through backoff — a client error never gets retried.*
+
 ```python
 def get_resilient(url, params=None, max_retries=5):
     for attempt in range(max_retries):
@@ -201,6 +213,21 @@ Three non-negotiable rules for a production webhook receiver:
 1. **Verify the signature.** Anyone on the internet can `POST` to a public URL and claim to be your payment processor. A webhook payload is almost always accompanied by a signature — an HMAC computed from a shared secret and the raw request body. Compute it yourself and compare with `hmac.compare_digest` (a timing-safe comparison — a plain `==` on secrets can leak information through response-time differences). **Never trust an unverified webhook body.**
 2. **Respond fast, then do the work.** The sender is often waiting on your response and will consider the delivery *failed* — and retry — if you take too long (many services time out around 10–30 seconds). If "mark the order paid" also needs to email a receipt and update three other tables, acknowledge the webhook first (`200` as soon as you've durably recorded the event), then process it — in a background job, a queue, or at minimum, after the fact. Don't make the sender wait on your slowest downstream step.
 3. **Expect duplicates and design for them.** Because the sender treats "no response" or a slow response as failure, it will **retry** — meaning you may receive the exact same event twice, or three times. This is not a bug in their system; it's a deliberate design choice (at-least-once delivery), and it is *your* job to be idempotent on receipt.
+
+```mermaid
+sequenceDiagram
+  participant Sender as Payment Processor
+  participant Receiver as Crunch Cycles Webhook
+  participant DB as Processed Events Table
+  Sender->>Receiver: POST event with signature
+  Receiver->>Receiver: Verify HMAC signature
+  Receiver->>DB: Check if event id already seen
+  DB-->>Receiver: Not seen yet
+  Receiver-->>Sender: 200 OK acknowledge fast
+  Receiver->>DB: Record event id as processed
+  Receiver->>Receiver: Do the real work after responding
+```
+*Verify first, acknowledge fast, then do the slow work — duplicates are handled by checking the processed-events table before acting.*
 
 ### Idempotent webhook handling
 

@@ -60,6 +60,21 @@ Postconditions (success): An order record exists with status "placed," linked to
   received a confirmation.
 ```
 
+```mermaid
+flowchart TD
+    A["Associate searches item by SKU"] --> B["System shows live warehouse stock"]
+    B --> C{"Enough stock"}
+    C -->|Yes| D["Associate enters customer contact info"]
+    C -->|No - partial stock| E["Offer available quantity or cancel"]
+    E --> D
+    D --> F{"Order total over 500 dollars"}
+    F -->|Yes| G["Route to Store Manager for approval"]
+    F -->|No| H["System creates order and confirms to customer"]
+    G --> H
+    B -.->|Warehouse system down| I["Show error and log outage - use case fails"]
+```
+*Main success scenario for Place a Special Order, with its alternate stock and approval branches and its exception path.*
+
 A few things worth noticing about that shape:
 
 - **The main success scenario reads like a script** — numbered steps, each one an observable action by the actor or the system. No ambiguity about who does what.
@@ -173,6 +188,15 @@ JOIN requirements r ON r.req_id = us.linked_req_id
 JOIN stakeholders s ON s.stakeholder_id = r.source_stakeholder_id
 WHERE us.story_id = 'US-001';
 ```
+
+```mermaid
+flowchart LR
+    A["Stakeholder pain"] --> B["Requirement FR or NFR"]
+    B --> C["Use case or user story"]
+    C --> D["Acceptance criteria"]
+    D --> E["Code and test"]
+```
+*One traceable chain from a stakeholder's original pain to the code that satisfies it.*
 
 ## 7. Check yourself
 

@@ -12,6 +12,14 @@ Every analysis you've written this week so far is a script you run once, read th
 
 Keep these as three distinct functions, even in a small script. It makes each one testable alone, and it's the vocabulary you'll need in Week 7 (Integration & APIs) when the source and destination are different systems entirely.
 
+```mermaid
+flowchart LR
+  A["Postgres crunchcycles"] --> B["extract SQL query"]
+  B --> C["transform pandas reshape"]
+  C --> D["load to_sql report table"]
+```
+*The same extract, transform, load shape scales from a script to a scheduled pipeline.*
+
 ```python
 # report.py
 import os
@@ -111,6 +119,18 @@ def load_incremental(day_df: pd.DataFrame, engine, run_date: str, table_name: st
 ```
 
 Deleting that day's rows first, inside the same transaction (`engine.begin()`), then inserting — so a re-run for the same day replaces cleanly instead of piling up duplicates, and if either step fails, the transaction rolls back instead of leaving the table half-updated.
+
+```mermaid
+sequenceDiagram
+  participant Script
+  participant DB as Database
+  Script->>DB: begin transaction
+  Script->>DB: delete rows for run date
+  Script->>DB: insert new rows
+  Script->>DB: commit
+  Note over DB: Re-run same day replaces cleanly
+```
+*Delete then insert inside one transaction makes a re-run for the same day safe.*
 
 ## 4. Structure over a single monolithic script
 

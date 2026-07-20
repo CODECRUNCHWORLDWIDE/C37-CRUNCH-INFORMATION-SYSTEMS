@@ -118,6 +118,15 @@ Revenue-in-USD figures on Week 10's BI dashboard
 
 Documenting lineage doesn't require special tooling for a system this size — a short Markdown diagram like the one above, kept next to the ETL job's code and updated when the pipeline changes, answers the two questions that matter most in practice: **when this number looks wrong, which upstream system do I check first**, and **if the source API changes its format, which downstream reports break**. At larger scale, dedicated lineage tools (e.g., OpenLineage, dbt's built-in lineage graph) automate this tracing across dozens of pipelines — worth knowing the term for, not required to build here.
 
+```mermaid
+flowchart LR
+  A["Frankfurter API - external daily EUR rates"] --> B["Python ETL job - extract validate transform"]
+  B --> C["fx_rates table in Postgres"]
+  C --> D["Joined against orders.order_date in reporting queries"]
+  D --> E["Revenue in USD on BI dashboard"]
+```
+*The same lineage chain as above, redrawn as a traceable pipeline from source to dashboard.*
+
 ## Putting it together — a governance policy is short
 
 A real governance policy for a system this size fits on one page, because its job is to be *read*, not to be exhaustive. It should state, for the tables that matter most:

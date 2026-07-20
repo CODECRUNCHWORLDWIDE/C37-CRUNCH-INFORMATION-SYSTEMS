@@ -98,6 +98,18 @@ CREATE TABLE maintenance_records (
 
 Read that top to bottom and notice the ordering isn't arbitrary: **PostgreSQL will refuse to create a table with a `REFERENCES` clause pointing at a table that doesn't exist yet.** Order your `CREATE TABLE` statements so every foreign key target is already defined — a direct, practical consequence of the relationships you mapped in Lecture 1.
 
+```mermaid
+flowchart LR
+  MP["membership_plans"] --> R["riders"]
+  ST["stations"] --> BK["bikes"]
+  ST --> RD["rides"]
+  R --> RD
+  BK --> RD
+  BK --> MR["maintenance_records"]
+  ME["mechanics"] --> MR
+```
+*Tables with no foreign keys are created first; everything downstream references them.*
+
 ## 3. Two foreign keys to the same table — `rides.start_station_id` / `end_station_id`
 
 This is the DDL version of the "two relationships to Station" callout from Lecture 1. Both columns reference `stations(station_id)`, and that's completely legal — a foreign key constraint doesn't care that another column in the same table references the same target; each `REFERENCES` is independent. What it *does* require is that you name them clearly (`start_station_id`, not `station_id_1`) — the column name is the only thing telling a future reader which relationship is which.
@@ -132,6 +144,15 @@ plan_id INTEGER NOT NULL REFERENCES membership_plans(plan_id)
 | `SET NULL` | Sets the FK column to `NULL` | The relationship is optional and the referencing row still means something without it (a bike's `station_id` when the station is decommissioned) |
 
 **Never pick `CASCADE` reflexively because it "makes the error go away."** A cascading delete that silently wipes out a table you didn't think about is one of the most common ways real production data gets destroyed. Every `ON DELETE` clause should be a sentence you could say out loud and defend.
+
+```mermaid
+flowchart TD
+  A["Referenced row is deleted"] --> B{"What should happen to child rows"}
+  B -->|"Delete them too"| C["CASCADE"]
+  B -->|"Block until reassigned"| D["RESTRICT - default"]
+  B -->|"Mark as unassigned"| E["SET NULL"]
+```
+*The question every foreign key's ON DELETE clause has to answer.*
 
 ## 5. Indexes — foreign keys don't get one for free
 

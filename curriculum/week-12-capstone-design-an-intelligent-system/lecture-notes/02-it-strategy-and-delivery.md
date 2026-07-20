@@ -31,6 +31,15 @@ Two rules make this phasing real, not just a diagram:
 - **Each phase must be independently useful.** If Phase 3 fails or gets cut for budget, Phases 0–2 still work and still deliver value. A phased plan where phase 4 is required for phase 1 to matter isn't actually phased — it's one big project cut into slides.
 - **Phase order follows risk, not preference.** AI is last not because it's least important, but because it's the least certain to work and the most dependent on everything below it being solid (Lecture 1). Shipping it first means betting the whole project on the riskiest, least-proven part.
 
+```mermaid
+flowchart LR
+  P0["Phase 0 Discovery"] --> P1["Phase 1 MVP data and core workflow"]
+  P1 --> P2["Phase 2 Integration and access"]
+  P2 --> P3["Phase 3 Analytics"]
+  P3 --> P4["Phase 4 AI feature"]
+```
+*Each phase ships independent value, in order of decreasing certainty.*
+
 ## 3. Total cost of ownership (TCO) — not just build cost
 
 The build cost is the part everyone estimates. The part that sinks budgets is what happens *after* launch: hosting, maintenance, support, and the slow tax of technical debt. Model TCO explicitly, in three buckets, using Python — never a spreadsheet, per this course's data rule, because a cost model with formulas is exactly the kind of thing that should be reproducible code, not a fragile cell reference.
